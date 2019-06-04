@@ -5,6 +5,9 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.Player.REPEAT_MODE_ONE
@@ -13,12 +16,17 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.ponomarenko.livestreaming.R
 import com.ponomarenko.livestreaming.data.Video
 import kotlinx.android.synthetic.main.fragment_video.view.*
 import java.util.*
 
 
-class PageViewAdapter(private val context: Context, private val list: ArrayList<Video>) :
+class PageViewAdapter(
+    private val context: Context,
+    private val list: ArrayList<Video>,
+    private val lifecycle: Lifecycle
+) :
     RecyclerView.Adapter<PageViewAdapter.MyViewHolder>() {
 
 
@@ -34,17 +42,18 @@ class PageViewAdapter(private val context: Context, private val list: ArrayList<
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view =
-            LayoutInflater.from(context).inflate(com.ponomarenko.livestreaming.R.layout.fragment_video, parent, false)
-        return MyViewHolder(view)
+            LayoutInflater.from(context).inflate(R.layout.fragment_video, parent, false)
+        return MyViewHolder(view).apply {
+            playerView.setOnClickListener {
+                playOrResume()
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val mediaSource = buildMediaSource(list[position].uri)
         holder.player.prepare(mediaSource)
 
-        holder.playerView.setOnClickListener {
-            holder.playOrResume()
-        }
     }
 
     override fun getItemCount(): Int {
@@ -99,6 +108,13 @@ class PageViewAdapter(private val context: Context, private val list: ArrayList<
 
         init {
             playerView.player = player
+            lifecycle.addObserver(object : LifecycleEventObserver {
+                override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                    if (event == Lifecycle.Event.ON_PAUSE) {
+                        playerView.player.playWhenReady = false
+                    }
+                }
+            })
         }
     }
 }
