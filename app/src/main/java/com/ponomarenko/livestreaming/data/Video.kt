@@ -1,4 +1,4 @@
-package com.ponomarenko.livestreaming
+package com.ponomarenko.livestreaming.data
 
 import android.net.Uri
 
