@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -17,18 +18,17 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.ponomarenko.livestreaming.R
-import com.ponomarenko.livestreaming.data.Video
+import com.ponomarenko.livestreaming.data.model.Post
 import kotlinx.android.synthetic.main.fragment_video.view.*
-import java.util.*
 
 
 class PageViewAdapter(
     private val context: Context,
-    private val list: ArrayList<Video>,
-    private val lifecycle: Lifecycle
+    private val list: List<Post>,
+    private val lifecycle: Lifecycle,
+    private val errorHandler: ErrorHandler
 ) :
     RecyclerView.Adapter<PageViewAdapter.MyViewHolder>() {
-
 
     override fun onViewAttachedToWindow(holder: MyViewHolder) {
         super.onViewAttachedToWindow(holder)
@@ -51,8 +51,12 @@ class PageViewAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val mediaSource = buildMediaSource(list[position].uri)
-        holder.player.prepare(mediaSource)
+        val mediaSource = buildMediaSource(list[position].videoUrl.toUri())
+        try {
+            holder.player.prepare(mediaSource)
+        } catch (e: Exception) {
+            errorHandler.doOnError()
+        }
 
     }
 
@@ -77,25 +81,16 @@ class PageViewAdapter(
         ).apply {
             repeatMode = REPEAT_MODE_ONE
             addListener(object : Player.EventListener {
-
-
                 override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                     super.onPlayerStateChanged(playWhenReady, playbackState)
-                    when (playbackState) {
-                        Player.STATE_BUFFERING -> itemView.progress_bar.visibility = View.VISIBLE
-                        Player.STATE_READY -> {
-                            itemView.progress_bar.visibility = View.GONE
-                            if (!playWhenReady) {
-                                itemView.play_btn.visibility = View.VISIBLE
-                            } else {
-                                itemView.play_btn.visibility = View.GONE
-                            }
-                        }
+                    if (!playWhenReady) {
+                        itemView.play_btn.visibility = View.VISIBLE
+                    } else {
+                        itemView.play_btn.visibility = View.GONE
                     }
                 }
             })
         }
-
 
         fun playOrResume() {
             player.playWhenReady = !player.playWhenReady
@@ -116,5 +111,9 @@ class PageViewAdapter(
                 }
             })
         }
+    }
+
+    interface ErrorHandler {
+        fun doOnError()
     }
 }

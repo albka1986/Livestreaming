@@ -4,6 +4,7 @@
              android:layout_width="match_parent" android:layout_height="match_parent">
 
     <com.google.android.exoplayer2.ui.PlayerView android:layout_width="match_parent"
+                                                 app:show_buffering="always"
                                                  android:id="@+id/player_view"
                                                  app:use_controller="false"
                                                  android:layout_gravity="center"
@@ -11,13 +12,8 @@
 
     <ImageView android:layout_width="80dp" android:layout_height="80dp"
                android:layout_gravity="center"
-               android:visibility="gone"
                android:id="@+id/play_btn"
+               android:visibility="gone"
                android:src="@drawable/ic_play_btn"/>
-
-    <ProgressBar android:layout_width="wrap_content" android:layout_gravity="center"
-                 android:id="@+id/progress_bar"
-                 android:visibility="visible"
-                 android:layout_height="wrap_content"/>
 
 </FrameLayout>
