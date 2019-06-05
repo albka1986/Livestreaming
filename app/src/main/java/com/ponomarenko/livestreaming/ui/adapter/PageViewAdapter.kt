@@ -113,6 +113,10 @@ class PageViewAdapter(
         }
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return -1
+    }
+
     interface ErrorHandler {
         fun doOnError()
     }
