@@ -21,6 +21,7 @@ class MainActivity : ScopedActivity(), KodeinAware {
     private val viewModelFactory: ViewModelFactory by instance()
     private lateinit var viewModel: MainViewModel
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,15 +31,13 @@ class MainActivity : ScopedActivity(), KodeinAware {
         launch {
             viewModel.movies.await().observe(this@MainActivity, Observer {
                 progress_bar.visibility = View.GONE
-                pager.adapter =
-                    PageViewAdapter(this@MainActivity, it, lifecycle, object : PageViewAdapter.ErrorHandler {
-                        override fun doOnError() {
-                            this@MainActivity.toast("Some error")
-                        }
-                    })
+                pager.adapter = PageViewAdapter(this@MainActivity, it, lifecycle, object : PageViewAdapter.ErrorHandler {
+                    override fun doOnError() {
+                        this@MainActivity.toast("Some error")
+                    }
+                })
             })
         }
-
     }
 
 

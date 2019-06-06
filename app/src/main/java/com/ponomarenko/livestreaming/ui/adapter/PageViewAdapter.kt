@@ -2,7 +2,6 @@ package com.ponomarenko.livestreaming.ui.adapter
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +34,6 @@ class PageViewAdapter(
         super.onViewAttachedToWindow(holder)
         holder.play(true)
     }
-
 
 
     override fun onViewDetachedFromWindow(holder: MyViewHolder) {
@@ -114,10 +112,6 @@ class PageViewAdapter(
                 }
             })
         }
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return -1
     }
 
     interface ErrorHandler {
