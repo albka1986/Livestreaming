@@ -31,12 +31,7 @@ class PageViewAdapter(
 ) :
     RecyclerView.Adapter<PageViewAdapter.MyViewHolder>() {
 
-    companion object {
-        private const val TAG = "PageViewAdapter"
-    }
-
     override fun onViewAttachedToWindow(holder: MyViewHolder) {
-        Log.d(TAG, "onViewAttachedToWindow")
         super.onViewAttachedToWindow(holder)
         holder.play(true)
     }
@@ -44,13 +39,11 @@ class PageViewAdapter(
 
 
     override fun onViewDetachedFromWindow(holder: MyViewHolder) {
-        Log.d(TAG, "onViewDetachedFromWindow")
         super.onViewDetachedFromWindow(holder)
         holder.play(false)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        Log.d(TAG, "onCreateViewHolder")
         val view =
             LayoutInflater.from(context).inflate(R.layout.fragment_video, parent, false)
         return MyViewHolder(view).apply {
@@ -61,7 +54,6 @@ class PageViewAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder: position # $position")
         val mediaSource = buildMediaSource(list[position].videoUrl.toUri())
         try {
             holder.player.prepare(mediaSource)
