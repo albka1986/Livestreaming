@@ -1,4 +1,4 @@
-package com.ponomarenko.livestreaming.etensions
+package com.ponomarenko.livestreaming.extensions
 
 import android.content.Context
 import android.util.Log

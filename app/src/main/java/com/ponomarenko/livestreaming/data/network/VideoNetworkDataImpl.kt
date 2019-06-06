@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ponomarenko.livestreaming.data.model.Fail
 import com.ponomarenko.livestreaming.data.model.Post
-import com.ponomarenko.livestreaming.etensions.loge
+import com.ponomarenko.livestreaming.extensions.loge
 import org.jsoup.Jsoup
 
 class VideoNetworkDataImpl(private val retrofitService: RetrofitService) : FailNetworkData {

@@ -5,7 +5,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ponomarenko.livestreaming.R
-import com.ponomarenko.livestreaming.etensions.toast
+import com.ponomarenko.livestreaming.extensions.toast
 import com.ponomarenko.livestreaming.ui.ViewModelFactory
 import com.ponomarenko.livestreaming.ui.adapter.PageViewAdapter
 import kotlinx.android.synthetic.main.activity_main.*
