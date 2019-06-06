@@ -36,6 +36,7 @@ class MainActivity : ScopedActivity(), KodeinAware {
                             this@MainActivity.toast("Some error")
                         }
                     })
+                pager.offscreenPageLimit = 2
             })
         }
 
