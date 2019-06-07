@@ -2,6 +2,7 @@ package com.ponomarenko.livestreaming.ui.adapter
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +11,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player.REPEAT_MODE_ONE
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -30,28 +34,40 @@ class PageViewAdapter(
 ) :
     RecyclerView.Adapter<PageViewAdapter.MyViewHolder>() {
 
-    override fun onViewAttachedToWindow(holder: MyViewHolder) {
-        super.onViewAttachedToWindow(holder)
-        holder.play(true)
+    private lateinit var recyclerView: RecyclerView
+
+    companion object {
+        private const val TAG = "PageViewAdapter"
     }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
+    override fun onViewAttachedToWindow(holder: MyViewHolder) {
+        Log.d(TAG, "onViewAttachedToWindow")
+        super.onViewAttachedToWindow(holder)
+//        holder.play(true)
+    }
 
     override fun onViewDetachedFromWindow(holder: MyViewHolder) {
+        Log.d(TAG, "onViewDetachedFromWindow")
         super.onViewDetachedFromWindow(holder)
         holder.play(false)
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        Log.d(TAG, "onCreateViewHolder")
+
         val view =
             LayoutInflater.from(context).inflate(R.layout.fragment_video, parent, false)
-        return MyViewHolder(view).apply {
-            playerView.setOnClickListener {
-                playOrResume()
-            }
-        }
+        return MyViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        Log.d(TAG, "onBindViewHolder: $position ")
         val mediaSource = buildMediaSource(list[position].videoUrl.toUri())
         try {
             holder.player.prepare(mediaSource)
@@ -59,6 +75,9 @@ class PageViewAdapter(
             errorHandler.doOnError()
         }
 
+        holder.itemView.setOnSystemUiVisibilityChangeListener {
+            Log.d(TAG, "setOnSystemUiVisibilityChangeListener: visibility - $it")
+        }
     }
 
     override fun getItemCount(): Int {
@@ -67,9 +86,14 @@ class PageViewAdapter(
 
     private fun buildMediaSource(uri: Uri): MediaSource {
         return ProgressiveMediaSource.Factory(
-            DefaultDataSourceFactory(context, context.getString(com.ponomarenko.livestreaming.R.string.app_name))
+            DefaultDataSourceFactory(context, context.getString(R.string.app_name))
         )
             .createMediaSource(uri)
+    }
+
+    fun play(position: Int, needPlay: Boolean) {
+        val viewHolder = recyclerView.findViewHolderForLayoutPosition(position) as MyViewHolder
+        viewHolder.play(needPlay)
     }
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -81,28 +105,14 @@ class PageViewAdapter(
             DefaultLoadControl()
         ).apply {
             repeatMode = REPEAT_MODE_ONE
-            addListener(object : Player.EventListener {
-                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                    super.onPlayerStateChanged(playWhenReady, playbackState)
-                    if (!playWhenReady) {
-                        itemView.play_btn.visibility = View.VISIBLE
-                    } else {
-                        itemView.play_btn.visibility = View.GONE
-                    }
-                }
-            })
-        }
-
-        fun playOrResume() {
-            player.playWhenReady = !player.playWhenReady
         }
 
         fun play(play: Boolean) {
             player.playWhenReady = play
         }
 
-
         init {
+            Log.d(TAG, "Init new holder")
             playerView.player = player
             lifecycle.addObserver(object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

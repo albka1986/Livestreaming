@@ -1,4 +1,4 @@
-package com.ponomarenko.livestreaming.ui.main
+package com.ponomarenko.livestreaming.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

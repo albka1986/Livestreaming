@@ -13,11 +13,12 @@ class RepositoryImpl(private val failNetworkDataImpl: FailNetworkData) : Reposit
     private val _movies = MutableLiveData<List<Post>>()
 
     override suspend fun getMovies(): MutableLiveData<List<Post>> {
-        parseMoviesFromLivestreamfails()
         return _movies
     }
 
     init {
+        parseMoviesFromLivestreamfails()
+
         failNetworkDataImpl.movies.observeForever {
             _movies.postValue(it)
         }
