@@ -37,7 +37,7 @@ class PageViewAdapter(
     private lateinit var recyclerView: RecyclerView
 
     companion object {
-        private const val TAG = "PageViewAdapter"
+        private val tag = this::class.java.simpleName
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -45,21 +45,13 @@ class PageViewAdapter(
         this.recyclerView = recyclerView
     }
 
-    override fun onViewAttachedToWindow(holder: MyViewHolder) {
-        Log.d(TAG, "onViewAttachedToWindow")
-        super.onViewAttachedToWindow(holder)
-//        holder.play(true)
-    }
-
     override fun onViewDetachedFromWindow(holder: MyViewHolder) {
-        Log.d(TAG, "onViewDetachedFromWindow")
         super.onViewDetachedFromWindow(holder)
         holder.play(false)
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        Log.d(TAG, "onCreateViewHolder")
 
         val view =
             LayoutInflater.from(context).inflate(R.layout.fragment_video, parent, false)
@@ -67,16 +59,11 @@ class PageViewAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder: $position ")
-        val mediaSource = buildMediaSource(list[position].videoUrl.toUri())
         try {
+            val mediaSource = buildMediaSource(list[position].videoUrl.toUri())
             holder.player.prepare(mediaSource)
         } catch (e: Exception) {
             errorHandler.doOnError()
-        }
-
-        holder.itemView.setOnSystemUiVisibilityChangeListener {
-            Log.d(TAG, "setOnSystemUiVisibilityChangeListener: visibility - $it")
         }
     }
 
@@ -96,6 +83,20 @@ class PageViewAdapter(
         viewHolder.play(needPlay)
     }
 
+    fun stopNeighbours(currentPosition: Int) {
+        val previousPosition = currentPosition - 1
+        if (previousPosition >= 0) {
+            val previousHolder = recyclerView.findViewHolderForLayoutPosition(previousPosition) as MyViewHolder
+            previousHolder.play(false)
+        }
+
+        val nextPosition = currentPosition + 1
+        if (nextPosition < list.size) {
+            val nextHolder = recyclerView.findViewHolderForLayoutPosition(nextPosition) as MyViewHolder
+            nextHolder.play(false)
+        }
+    }
+
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val playerView: PlayerView = itemView.player_view
         val player: SimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(
@@ -112,7 +113,6 @@ class PageViewAdapter(
         }
 
         init {
-            Log.d(TAG, "Init new holder")
             playerView.player = player
             lifecycle.addObserver(object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

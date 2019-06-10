@@ -72,5 +72,6 @@ dependencies {
     implementation "org.kodein.di:kodein-di-generic-jvm:$kodein_version"
     implementation "org.kodein.di:kodein-di-framework-android-x:$kodein_version"
 
+    implementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-2'
 
 }

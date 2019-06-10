@@ -49,20 +49,11 @@ class MainActivity : ScopedActivity(), KodeinAware {
                 pager.offscreenPageLimit = 2
 
                 pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-
-                    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-                        super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                        Log.d(TAG, "onPageScrolled: $position, positionOffset: $positionOffset")
-                        if (positionOffset > 0.5f) {
-                            pageViewAdapter.play(position, false)
-                        }
-                    }
-
                     override fun onPageSelected(position: Int) {
                         Log.d(TAG, "onPageSelected: $position")
                         super.onPageSelected(position)
                         pageViewAdapter.play(position, true)
-
+                        pageViewAdapter.stopNeighbours(position)
                     }
                 })
             })
