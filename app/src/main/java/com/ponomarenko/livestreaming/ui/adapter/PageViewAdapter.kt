@@ -2,7 +2,6 @@ package com.ponomarenko.livestreaming.ui.adapter
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player.REPEAT_MODE_ONE
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -60,7 +60,7 @@ class PageViewAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         try {
-            val mediaSource = buildMediaSource(list[position].videoUrl.toUri())
+            val mediaSource = buildRtmpSource(list[position].videoUrl.toUri())
             holder.player.prepare(mediaSource)
         } catch (e: Exception) {
             errorHandler.doOnError()
@@ -75,6 +75,12 @@ class PageViewAdapter(
         return ProgressiveMediaSource.Factory(
             DefaultDataSourceFactory(context, context.getString(R.string.app_name))
         )
+            .createMediaSource(uri)
+    }
+
+    private fun buildRtmpSource(uri: Uri): MediaSource {
+        val rtmpDataSourceFactory = RtmpDataSourceFactory()
+        return ProgressiveMediaSource.Factory(rtmpDataSourceFactory)
             .createMediaSource(uri)
     }
 

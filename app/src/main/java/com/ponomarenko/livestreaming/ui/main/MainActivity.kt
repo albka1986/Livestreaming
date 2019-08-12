@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager2.widget.ViewPager2
 import com.ponomarenko.livestreaming.R
+import com.ponomarenko.livestreaming.data.model.Post
 import com.ponomarenko.livestreaming.extensions.toast
 import com.ponomarenko.livestreaming.ui.ScopedActivity
 import com.ponomarenko.livestreaming.ui.ViewModelFactory
@@ -37,8 +38,11 @@ class MainActivity : ScopedActivity(), KodeinAware {
         launch {
             viewModel.movies.await().observe(this@MainActivity, Observer {
                 progress_bar.visibility = View.GONE
+
+                val x = Post("rtmp://192.168.88.191/live")
+                val listOf = listOf(x)
                 val pageViewAdapter =
-                    PageViewAdapter(this@MainActivity, it, lifecycle, object : PageViewAdapter.ErrorHandler {
+                    PageViewAdapter(this@MainActivity, listOf, lifecycle, object : PageViewAdapter.ErrorHandler {
                         override fun doOnError() {
                             this@MainActivity.toast("Some error")
                         }
